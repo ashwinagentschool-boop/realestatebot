@@ -1,0 +1,29 @@
+name: Daily Reddit to Telegram
+
+on:
+  schedule:
+    # Runs every day at 03:30 UTC = 09:00 IST
+    - cron: "30 3 * * *"
+  workflow_dispatch:  # lets you run it manually from the Actions tab
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests openpyxl anthropic
+
+      - name: Run script
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python reddit_to_telegram.py
